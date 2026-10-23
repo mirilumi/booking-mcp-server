@@ -13,3 +13,6 @@ build/
 
 # Claude Code: personal settings stay local, shared settings and skills are committed
 .claude/settings.local.json
+
+# Local profile with real credentials (run with --spring.profiles.active=dev); never commit
+src/main/resources/application-dev.yml

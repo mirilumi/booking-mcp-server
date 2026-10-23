@@ -28,12 +28,17 @@ Spec: $ARGUMENTS
 - Auth "forward the caller's Authorization header": add a `RestClientHttpServiceGroupConfigurer` bean in
   `HttpClientsConfig` that, for this group, adds a request interceptor copying `Authorization` from the
   current request (`RequestContextHolder`). Reuse it if it already exists.
-- Auth "service-to-service token": stop and ask the user how the token is obtained.
+- Auth "service token": annotate the interface with `@ClientRegistrationId("backend")`. Nothing else: the token
+  is fetched, cached and attached by `ServiceAuthConfig` (see `docs/design/service-auth.md`). If the spec names a
+  different auth server, stop and ask: it needs its own registration in `spring.security.oauth2.client`.
+- Auth "none": no annotation.
 
 ## 4. Test it
 - `src/test/kotlin/io/github/mirilumi/mcp/booking/clients/<Service>ClientTest.kt`: start a stub with
   `com.sun.net.httpserver.HttpServer` on a random port, point the base URL at it via `@DynamicPropertySource`,
   call each client method, and assert the request (method, path, query, body, forwarded header) and the parsed response.
+  For a service-token client, serve `/oauth2/token` from the same stub and set `AUTH_BASE_URL` to it
+  (see `ServiceAuthTest` for the pattern), then assert `Authorization: Bearer <token>`.
 - Run `./gradlew build` and fix until it passes.
 
 ## 5. Report

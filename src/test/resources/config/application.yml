@@ -1,0 +1,5 @@
+# Loaded on top of src/main/resources/application.yml in tests (classpath:/config/ takes precedence).
+# Dummy values so the app starts; tests that need a token server override AUTH_BASE_URL.
+AUTH_BASE_URL: http://localhost:1
+AUTH_CLIENT_ID: test-client
+AUTH_CLIENT_SECRET: test-secret

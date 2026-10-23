@@ -14,13 +14,18 @@ specific project's backend go behind client interfaces in `clients/`, so the too
 ## Commands
 - Build + all tests: `./gradlew build`
 - One test class: `./gradlew test --tests "*EchoToolsTest"`
-- Run locally: `./gradlew bootRun` (port 9010, MCP endpoint `http://localhost:9010/mcp`)
+- Run locally: `./gradlew bootRun` (port 9010, MCP endpoint `http://localhost:9010/mcp`).
+  Needs `AUTH_BASE_URL`, `AUTH_CLIENT_ID`, `AUTH_CLIENT_SECRET` in the environment; never write their values into files.
 
 ## Layout
 - `tools/` - one `@Component` class per tool group, methods annotated `@McpTool`
-- `clients/` - one `@HttpExchange` interface per downstream service (see the `add-service-client` skill)
+- `clients/` - one `@HttpExchange` interface per downstream service (see the `add-service-client` skill);
+  `ServiceAuthConfig` attaches the service token to interfaces annotated `@ClientRegistrationId("backend")`
+- `security/SecurityConfig` - keeps `/mcp` and health open, denies everything else
 - `src/test/.../McpTestClient.kt` - speaks MCP to `/mcp` through MockMvc; every tool test uses it
+- `src/test/resources/config/application.yml` - dummy `AUTH_*` values so tests start; layered on top of the main config
 - `docs/specs/` - specs for tools and clients, written from the templates there
+- `docs/design/` - design decisions (e.g. `service-auth.md`)
 
 ## Conventions for tools
 - Tool names: `snake_case`, verb first (`search_flights`, `get_booking_summary`).
