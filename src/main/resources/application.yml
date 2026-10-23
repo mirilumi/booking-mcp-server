@@ -17,6 +17,21 @@ spring:
         protocol: STATELESS
         streamable-http:
           mcp-endpoint: /mcp
+  security:
+    oauth2:
+      client:
+        # Token for downstream services; clients opt in with @ClientRegistrationId("backend").
+        # Set AUTH_BASE_URL, AUTH_CLIENT_ID and AUTH_CLIENT_SECRET in the environment; never commit them.
+        registration:
+          backend:
+            client-id: ${AUTH_CLIENT_ID}
+            client-secret: ${AUTH_CLIENT_SECRET}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: client_credentials
+            provider: backend
+        provider:
+          backend:
+            token-uri: ${AUTH_BASE_URL}/oauth2/token
 
 management:
   endpoints:

@@ -25,7 +25,11 @@ inventory services through typed HTTP clients, so the same tools can sit in fron
 
 Requires JDK 25 (Gradle downloads it automatically if missing).
 
+Downstream calls use an OAuth2 client credentials token ([design](docs/design/service-auth.md)). Set the auth
+server and this server's client in the environment:
+
 ```bash
+export AUTH_BASE_URL=http://localhost:9001 AUTH_CLIENT_ID=<client-id> AUTH_CLIENT_SECRET=<client-secret>
 ./gradlew bootRun
 ```
 
@@ -87,6 +91,7 @@ New tools and clients start as a short spec written from a template in [`docs/sp
 
 - [x] MCP server skeleton (Streamable HTTP, stateless), example tool, MCP test harness
 - [x] Spec templates and Claude Code skills for tools and clients
+- [x] OAuth2 client credentials token for downstream services
 - [ ] `search_flights` - search offers for a route and dates
 - [ ] `start_booking`, `add_passengers`, `add_extras` - cart steps with server-side state
 - [ ] `get_booking_summary` - priced summary to confirm with the user

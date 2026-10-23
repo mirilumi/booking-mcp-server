@@ -17,8 +17,9 @@ Copy this file to docs/specs/<service-name>-client.md, fill it in, then run:
 
 ## Authentication
 <!-- Tick one. -->
+- [ ] Service token: this server's own client credentials token (`@ClientRegistrationId("backend")`,
+      see docs/design/service-auth.md)
 - [ ] Forward the caller's `Authorization` header (calls made on behalf of the user)
-- [ ] Service-to-service token (client credentials) - say where it comes from
 - [ ] None
 
 ## Timeouts
