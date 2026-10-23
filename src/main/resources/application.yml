@@ -1,0 +1,25 @@
+server:
+  port: 9010
+
+spring:
+  application:
+    name: booking-mcp-server
+  threads:
+    virtual:
+      enabled: true
+  ai:
+    mcp:
+      server:
+        name: ${spring.application.name}
+        version: 0.0.1
+        # Must be set explicitly: without it Spring AI falls back to the legacy SSE transport (/sse).
+        # STATELESS = Streamable HTTP without server-side MCP sessions, so it scales across pods.
+        protocol: STATELESS
+        streamable-http:
+          mcp-endpoint: /mcp
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
