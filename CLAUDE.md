@@ -13,22 +13,30 @@ specific project's backend go behind client interfaces in `clients/`, so the too
 
 ## Commands
 - Build + all tests: `./gradlew build`
-- One test class: `./gradlew test --tests "*EchoToolsTest"`
+- One test class: `./gradlew test --tests "*AvailabilitiesToolsTest"`
 - Run locally: `./gradlew bootRun` (port 9010, MCP endpoint `http://localhost:9010/mcp`).
   Needs `AUTH_BASE_URL`, `AUTH_CLIENT_ID`, `AUTH_CLIENT_SECRET` in the environment; never write their values into files.
 
 ## Layout
-- `tools/` - one `@Component` class per tool group, methods annotated `@McpTool`
-- `clients/` - one `@HttpExchange` interface per downstream service (see the `add-service-client` skill);
-  `ServiceAuthConfig` attaches the service token to interfaces annotated `@ClientRegistrationId("backend")`
+- `tools/<service>/` - the tools backed by one downstream service, in a `<Service>Tools` `@Component`
+  (see `tools/availabilities/`); `tools/` itself only for tools that use no downstream service
+- `clients/<service>/` - one package per downstream service, named like `specs/<service>/`: its
+  `<Service>ClientConfig` registers the clients (see `clients/availabilities/` and the `add-service-client` skill).
+- Code that uses generated classes stays in `clients/<service>/` or `tools/<service>/`: the build leaves both out
+  when `specs/<service>/spec.json` is missing, so this public repo still compiles without private specs.
+- `clients/auth/` - `ServiceAuthConfig`: service token for downstream calls (`docs/design/service-auth.md`)
 - `security/SecurityConfig` - keeps `/mcp` and health open, denies everything else
 - `src/test/.../McpTestClient.kt` - speaks MCP to `/mcp` through MockMvc; every tool test uses it
 - `src/test/resources/config/application.yml` - dummy `AUTH_*` values so tests start; layered on top of the main config
+- `specs/<service>/spec.json` - OpenAPI spec per downstream service (gitignored); the build generates
+  `...clients.<service>.api` / `.model` from it into `build/generated/openapi/<service>` (see `specs/README.md`)
 - `docs/specs/` - specs for tools and clients, written from the templates there
 - `docs/design/` - design decisions (e.g. `service-auth.md`)
 
 ## Conventions for tools
-- Tool names: `snake_case`, verb first (`search_flights`, `get_booking_summary`).
+- Tool names: `snake_case`, `<service>_<verb>_<thing>`, starting with the service the tool calls
+  (`availabilities_get_valid_dates_with_prices`, `booking_cart_add_passengers`; hyphens become underscores).
+  Tools that call no downstream service have no prefix.
 - The `description` is written for the AI: what the tool does, when to use it, what it returns, units and currency.
   Each `@McpToolParam` description says the format (e.g. "IATA airport code, e.g. SKP").
 - Set `McpTool.McpAnnotations`: `readOnlyHint = true` for lookups; `destructiveHint = true` for anything that
@@ -43,4 +51,5 @@ specific project's backend go behind client interfaces in `clients/`, so the too
 
 ## Skills
 - `/add-mcp-tool docs/specs/<tool>.md` - creates a tool + test from a filled-in tool spec
-- `/add-service-client docs/specs/<client>.md` - creates an `@HttpExchange` client + config from a filled-in client spec
+- `/add-service-spec <service> <path-or-url>` - adds or refreshes `specs/<service>/spec.json` and generates its models/clients
+- `/add-service-client <service> [docs/specs/<service>-client.md]` - adds `clients/<service>/`: registers the generated (or hand-written) clients with config, auth and a stub test

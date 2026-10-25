@@ -1,4 +1,4 @@
-package io.github.mirilumi.mcp.booking.clients
+package io.github.mirilumi.mcp.booking.clients.auth
 
 import com.sun.net.httpserver.HttpServer
 import org.junit.jupiter.api.AfterAll

@@ -1,6 +1,6 @@
 package io.github.mirilumi.mcp.booking.dev
 
-import io.github.mirilumi.mcp.booking.clients.ServiceAuthConfig
+import io.github.mirilumi.mcp.booking.clients.auth.ServiceAuthConfig
 import org.springframework.context.annotation.Profile
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager

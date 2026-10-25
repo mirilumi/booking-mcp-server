@@ -16,3 +16,7 @@ build/
 
 # Local profile with real credentials (run with --spring.profiles.active=dev); never commit
 src/main/resources/application-dev.yml
+
+# OpenAPI specs of private services: kept locally, never committed (see specs/README.md)
+specs/*/spec.json
+specs/*/spec.yaml

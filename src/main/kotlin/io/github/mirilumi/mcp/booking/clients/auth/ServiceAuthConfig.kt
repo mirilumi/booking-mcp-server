@@ -1,4 +1,4 @@
-package io.github.mirilumi.mcp.booking.clients
+package io.github.mirilumi.mcp.booking.clients.auth
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

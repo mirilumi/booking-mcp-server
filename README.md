@@ -7,8 +7,9 @@ payment link, and check booking status.
 The server is an orchestration layer. It holds no booking logic of its own: tools call downstream booking or
 inventory services through typed HTTP clients, so the same tools can sit in front of different backends.
 
-> **Status:** early. The project skeleton, MCP transport, testing harness and development workflow are in place,
-> with an example `echo` tool. Booking tools are being added one at a time from specs (see [Roadmap](#roadmap)).
+> **Status:** early. The MCP transport, service authentication, generated service clients, testing harness and
+> development workflow are in place, with a first tool (`availabilities_get_valid_dates_with_prices`). Booking tools
+> are being added one at a time from specs (see [Roadmap](#roadmap)).
 
 ## Tech stack
 
@@ -35,12 +36,20 @@ export AUTH_BASE_URL=http://localhost:9001 AUTH_CLIENT_ID=<client-id> AUTH_CLIEN
 
 The MCP endpoint is `http://localhost:9010/mcp`.
 
-Try it with curl:
+Try it with curl. List the tools:
 
 ```bash
 curl -s http://localhost:9010/mcp \
   -H "Content-Type: application/json" -H "Accept: application/json, text/event-stream" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"echo","arguments":{"message":"hello"}}}'
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+Call one (needs the downstream service it uses, see [`specs/`](specs/README.md)):
+
+```bash
+curl -s http://localhost:9010/mcp \
+  -H "Content-Type: application/json" -H "Accept: application/json, text/event-stream" \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"availabilities_get_valid_dates_with_prices","arguments":{"origin":"SKP","destination":"FCO"}}}'
 ```
 
 ### Connecting an AI client
@@ -64,9 +73,10 @@ curl -s http://localhost:9010/mcp \
 
 ```
 src/main/kotlin/io/github/mirilumi/mcp/booking/
-  tools/      MCP tools (@McpTool), one class per tool group
-  clients/    @HttpExchange clients for downstream services
+  tools/      MCP tools (@McpTool), one package per downstream service; tool names start with the service
+  clients/    one package per downstream service (+ auth/ for the service token)
 src/test/kotlin/.../McpTestClient.kt   MCP JSON-RPC client used by tool tests
+specs/<service>/spec.json             OpenAPI spec per downstream service (gitignored), generated into clients/<service>
 docs/specs/                           Specs for tools and clients (templates included)
 .claude/skills/                       Claude Code skills that implement a tool or client from a spec
 ```
@@ -77,7 +87,8 @@ New tools and clients start as a short spec written from a template in [`docs/sp
 [Claude Code](https://claude.com/claude-code), the project skills turn a spec into code and tests:
 
 ```
-/add-service-client docs/specs/<service>-client.md
+/add-service-spec <service> <spec-path-or-url>
+/add-service-client <service>
 /add-mcp-tool docs/specs/<tool>.md
 ```
 
@@ -89,9 +100,11 @@ New tools and clients start as a short spec written from a template in [`docs/sp
 
 ## Roadmap
 
-- [x] MCP server skeleton (Streamable HTTP, stateless), example tool, MCP test harness
+- [x] MCP server skeleton (Streamable HTTP, stateless), MCP test harness
 - [x] Spec templates and Claude Code skills for tools and clients
 - [x] OAuth2 client credentials token for downstream services
+- [x] `availabilities_get_valid_dates_with_prices` - dates with flights and the lowest fare per date
+- [x] `availabilities_search_flights` - all bookable flights and fares on a date, with the group price breakdown
 - [ ] `search_flights` - search offers for a route and dates
 - [ ] `start_booking`, `add_passengers`, `add_extras` - cart steps with server-side state
 - [ ] `get_booking_summary` - priced summary to confirm with the user

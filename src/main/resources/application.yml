@@ -32,6 +32,13 @@ spring:
         provider:
           backend:
             token-uri: ${AUTH_BASE_URL}/oauth2/token
+  http:
+    serviceclient:
+      # One group per downstream service (clients/<service>/), named like specs/<service>/
+      availabilities:
+        base-url: ${AVAILABILITIES_BASE_URL:http://localhost:9008}
+        connect-timeout: 2s
+        read-timeout: 20s
 
 management:
   endpoints:

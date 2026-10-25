@@ -1,6 +1,6 @@
 # Design: authenticating calls to downstream services
 
-Status: implemented (`clients/ServiceAuthConfig.kt`, `security/SecurityConfig.kt`, `ServiceAuthTest`)
+Status: implemented (`clients/auth/ServiceAuthConfig.kt`, `security/SecurityConfig.kt`, `ServiceAuthTest`)
 
 ## Problem
 Downstream services require a bearer JWT. The MCP server needs its own token to call them; there is no user

@@ -1,4 +1,4 @@
-package io.github.mirilumi.mcp.booking.clients
+package io.github.mirilumi.mcp.booking.clients.auth
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
